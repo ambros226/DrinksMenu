@@ -1,24 +1,102 @@
 <?php
 
+function UsernameTest($name)
+{
+    $correct = true;
+    if (contNum($name)) {
+        $correct = false;
+    }
+    if (contSymb($name)) {
+        $correct = false;
+    }
+    return $correct;
+}
 
-$drink_list="drink-list.txt";
+function error_print($error)
+{
+    echo "<div class='error-field'><p>$error</p></div>";
+}
 
-if (isset($_POST["drink"]) && isset($_POST["name"]) && isset($_POST["phone-num"])) {
+function contSymb($name)
+{
+    $name_list = preg_split('//u', $name, -1, PREG_SPLIT_NO_EMPTY);
+    foreach ($name_list as $char) {
+        if (in_array($char, ["@", "#", "$", "~", "&", ".", ",", "_", "!", "?", "§"])) {
+            $error = "The username can't contains symbols.";
+            error_print($error);
+            return true;
+        }
+    }
+    return false;
+}
 
-    $drink=$_POST["drink"];
-    $name=htmlspecialchars( $_POST["name"]);
+;
 
-    $phone=$_POST["phone-num"];
-    $phone=str_replace(" ", "", $phone);
+function contNum($name)
+{
+    $name_list = preg_split('//u', $name, -1, PREG_SPLIT_NO_EMPTY);
+    foreach ($name_list as $char) {
+        if (in_array($char, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"])) {
+            $error = "The username can't contains numbers.";
+            error_print($error);
+            return true;
+        }
+    }
+    return false;
+}
 
-    $time=date("m-d H:i");
+function LongNum($phone)
+{
+    $phone_list = str_split($phone);
+    if (count($phone_list) > 9) {
+        $error = "The Phone number can't be longer.";
+        error_print($error);
+        return false;
+    }
+    else if (count($phone_list) < 9) {
+        $error = "The Phone number can't be shorter.";
+        error_print($error);
+        return false;
+    }
+    return true;
+    
+}
 
-    $txtInput= $name . "|" . $phone . "|" . $time ."|". "$drink";
+function CutPhoneNum($phone)
+{
+    $phone_list = str_split($phone);
+    if (count($phone_list) > 9) {
+        if (implode("", array_slice($phone_list, 0, 3)) == "420") {
+            $phone_list = array_slice($phone_list, 3);
 
-    file_put_contents($drink_list, $txtInput . "\n", FILE_APPEND);
-    echo "Formulář odeslán";
-    header("Location:answer.php");
-    exit;
+        }
+    }
+    return implode("", $phone_list);
+}
+
+
+$drink_list = "order-list.txt";
+
+if (isset($_POST["drink"]) && !empty($_POST["name"]) && !empty($_POST["phone-num"])) {
+    if (UsernameTest($_POST["name"])) {
+        $drink = $_POST["drink"];
+        $name = htmlspecialchars($_POST["name"]);
+
+        $phone = $_POST["phone-num"];
+        $phone = str_replace(" ", "", $phone);
+        $phone = CutPhoneNum($phone);
+        if (LongNum($phone)) {
+            $time = date("m-d H:i");
+
+            $txtInput = $name . "|" . $phone . "|" . $time . "|" . "$drink";
+
+            file_put_contents($drink_list, $txtInput . "\n", FILE_APPEND);
+            header("Location:answer.php");
+            exit;
+        }
+
+    }
+
 }
 
 $zaznamy = file_exists($drink_list) ? file($drink_list, FILE_SKIP_EMPTY_LINES) : [];
@@ -33,30 +111,56 @@ $zaznamy = file_exists($drink_list) ? file($drink_list, FILE_SKIP_EMPTY_LINES) :
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Menu</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Menu</h1>
+<?php
+require_once "header.php";
+?>
 <div class="menu-box">
     <form method="post">
-        <input type="radio" name="drink" id="mojito" value="Mojito">
-        <label for="mojito">Mojito</label>
+        <div class="drink-box">
+            <?php
+            $drink_list = "drinks.txt";
+            $menu = file_exists($drink_list) ? file($drink_list, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
 
-        <input type="radio" name="drink" id="cuba-libre" value="Cuba-Libre">
-        <label for="cuba-libre">Cuba Libre</label>
+            function DrinksList($menu){
+                foreach ($menu as $drink) {
+                    $drink_line = explode("|", $drink);
+                    $set = $drink_line[0];
+                    $drink = $drink_line[1];
+                    $value = ucfirst($drink);
+                    $checked=(isset($_POST['drink']) && $_POST['drink'] === $value) ? 'checked' : '';
+                    if($set == "on"){
+                        echo"
+                    <label for='$drink'><input type='radio' name='drink' id='$drink' value='$value' $checked > $value</label>
+                    ";
+                    }
 
-        <input type="radio" name="drink" id="margarita" value="Margarita">
-        <label for="margarita">Margarita</label>
 
+
+                }
+            }
+            DrinksList($menu);
+
+
+            ?>
+            
+        </div>
         <div class="sign-data-box">
             <label for="name">Name:</label>
-            <input type="text" name="name" id="name">
+            <input type="text" name="name" id="name" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
             <label for="phone-num">Phone-num:</label>
-            <input type="text" name="phone-num" id="phone-num" oninput="this.value = this.value.replace(/[^0-9],' '/g, '')">
+            <input type="text" name="phone-num" id="phone-num"
+                   oninput="this.value = this.value.replace(/[^0-9],' '/g, '')" required value="<?= htmlspecialchars($_POST['phone-num'] ?? '') ?>">
+            <input type="submit" value="ORDER">
         </div>
 
-        <input type="submit">
+
     </form>
 </div>
-
+<?php
+require_once "footer.php";
+?>
 </body>
 </html>
