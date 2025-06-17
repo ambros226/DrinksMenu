@@ -1,5 +1,26 @@
 <?php
+if (isset($_GET['drinks-list'])) {
+    $drink_list = "drinks.txt";
+    $menu = file_exists($drink_list) ? file($drink_list, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
 
+    function DrinksList($menu)
+    {
+        foreach ($menu as $line) {
+            $drink_line = explode("|", $line);
+            $set = $drink_line[0];
+            $drink = $drink_line[1];
+            $value = ucfirst($drink);
+            if ($set == "on") {
+                echo "<label for='" . htmlspecialchars($drink) . "'>
+                        <input type='radio' name='drink' id='" . htmlspecialchars($drink) . "' value='" . htmlspecialchars($value) . "'> $value
+                      </label>";
+            }
+        }
+    }
+
+    DrinksList($menu);
+    exit;
+}
 function UsernameTest($name)
 {
     $correct = true;
@@ -52,14 +73,13 @@ function LongNum($phone)
         $error = "The Phone number can't be longer.";
         error_print($error);
         return false;
-    }
-    else if (count($phone_list) < 9) {
+    } else if (count($phone_list) < 9) {
         $error = "The Phone number can't be shorter.";
         error_print($error);
         return false;
     }
     return true;
-    
+
 }
 
 function CutPhoneNum($phone)
@@ -120,47 +140,43 @@ require_once "header.php";
 <div class="menu-box">
     <form method="post">
         <div class="drink-box">
-            <?php
-            $drink_list = "drinks.txt";
-            $menu = file_exists($drink_list) ? file($drink_list, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
 
-            function DrinksList($menu){
-                foreach ($menu as $drink) {
-                    $drink_line = explode("|", $drink);
-                    $set = $drink_line[0];
-                    $drink = $drink_line[1];
-                    $value = ucfirst($drink);
-                    $checked=(isset($_POST['drink']) && $_POST['drink'] === $value) ? 'checked' : '';
-                    if($set == "on"){
-                        echo"
-                    <label for='$drink'><input type='radio' name='drink' id='$drink' value='$value' $checked > $value</label>
-                    ";
-                    }
-
-
-
-                }
-            }
-            DrinksList($menu);
-
-
-            ?>
             
+
         </div>
         <div class="sign-data-box">
             <label for="name">Name:</label>
             <input type="text" name="name" id="name" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
             <label for="phone-num">Phone-num:</label>
             <input type="text" name="phone-num" id="phone-num"
-                   oninput="this.value = this.value.replace(/[^0-9],' '/g, '')" required value="<?= htmlspecialchars($_POST['phone-num'] ?? '') ?>">
+                   oninput="this.value = this.value.replace(/[^0-9],' '/g, '')" required
+                   value="<?= htmlspecialchars($_POST['phone-num'] ?? '') ?>">
             <input type="submit" value="ORDER">
         </div>
 
 
     </form>
 </div>
+<script>
+    setInterval(() => {
+        fetch('menu.php?drinks-list')
+            .then(response => response.text())
+            .then(html => {
+                document.querySelector('.drink-box').innerHTML = html;
+            })
+            .catch(error => console.error('Chyba:', error));
+    }, 10000);
+
+    // Pro okamžité načtení při startu stránky:
+    fetch('menu.php?drinks-list')
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.drink-box').innerHTML = html;
+        });
+</script>
 <?php
 require_once "footer.php";
 ?>
+
 </body>
 </html>
