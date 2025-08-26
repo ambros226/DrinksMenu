@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 if (isset($_GET['drinks-list'])) {
     $drink_list = "drinks.txt";
     $menu = file_exists($drink_list) ? file($drink_list, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
@@ -103,6 +105,11 @@ if (isset($_POST["drink"]) && !empty($_POST["name"]) && !empty($_POST["phone-num
         $phone = $_POST["phone-num"];
         $phone = str_replace(" ", "", $phone);
         $phone = CutPhoneNum($phone);
+        $_SESSION['user-info'] = [
+                'name' => $name,
+                "phone" => $phone,
+                "drink" => $drink
+        ];
         if (LongNum($phone)) {
             $time = date("m-d H:i");
 
