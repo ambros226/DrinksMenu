@@ -1,6 +1,14 @@
 <?php
 session_start();
 
+if (isset($_GET['reset-session'])) {
+    session_unset();     // smaže všechny proměnné v $_SESSION
+    session_destroy();   // zničí aktuální session
+    setcookie(session_name(), '', time() - 3600, '/'); // smaže cookie v prohlížeči
+    header("Location: menu.php"); // znovu načte stránku čistou
+    exit;
+}
+
 if (isset($_GET['drinks-list'])) {
     $drink_list = "drinks.txt";
     $menu = file_exists($drink_list) ? file($drink_list, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
@@ -141,16 +149,17 @@ require_once "header.php";
 ?>
 <div class="menu-box">
     <form method="post">
+        <h1>Choose a drink</h1>
         <div class="drink-box">
             <!-- Zde se načtou radio buttony přes fetch -->
         </div>
         <div class="sign-data-box">
             <label for="name">Name:</label>
-            <input type="text" name="name" id="name" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+            <input type="text" name="name" id="name" required value="<?= $_SESSION['user-info']['name'] ?? '' ?>">
             <label for="phone-num">Phone-num:</label>
             <input type="text" name="phone-num" id="phone-num"
                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required
-                   value="<?= htmlspecialchars($_POST['phone-num'] ?? '') ?>">
+                   value="<?= $_SESSION['user-info']['phone'] ?? '' ?>">
             <input type="submit" value="ORDER">
         </div>
     </form>
