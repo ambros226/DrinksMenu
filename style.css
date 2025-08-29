@@ -78,7 +78,7 @@ Customer display
     justify-content: center;
     margin: 0;
     h1{
-        color: rgba(85, 85, 85, 0.53);
+        color: rgba(85, 85, 85, 0.64);
         font-size: 3rem;
         text-align: center;
         width: 70%;
@@ -90,7 +90,7 @@ Customer display
         flex-direction: column;
         justify-content: center;
         width: 300px;
-        margin: 10px;
+        margin: 70px 30px 0 30px;
 
 
 
@@ -118,34 +118,63 @@ Customer display
     flex-direction: column;
     align-items: center;
     margin: 50px;
-    padding: 20px 0;
-    border: 2px solid rgba(50, 50, 50, 0.38);
-    background: rgba(50, 50, 50, 0.1);
-    width: 300px;
-    border-radius: 10px;
-    input{
-        padding: 2px;
-        margin: 5px;
-    }
-    input[type=submit] {
-        color: rgba(50, 50, 50, 0.61);
-        text-decoration: none;
-        background: #ecebeb;
-        border: rgba(85, 85, 85, 0.37) 2px solid ;
-        border-radius: 5px;
-        transition:0.3s;
-    }
-    input[type=submit]:hover {
-        font-weight: bold;
-        transform: scale(1.1);
-        color: rgb(21, 110, 10);
-        border: rgb(29, 147, 12) 2px solid ;
-        background:  rgba(29, 147, 12, 0.27) 2px;
-    }
+    padding: 40px 0;
+    border-top: 2px solid rgba(50, 50, 50, 0.38);
+    width: 350px;
 
+    label{
+        font-size: 1.2rem;
+        color: #555;
+        margin-top: 20px;
+    }
+    input[type=text] {
+        padding: 5px;
+        margin: 10px;
+        height: 20px;
+        font-size: 15px;
+        border:#555 1.5px solid ;
+        border-radius: 10px;
+
+    }
+    button[type=submit] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: #ffffff;
+        margin-top: 5vh;
+        width: 12rem;
+        height: 4rem;
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-decoration: none;
+        border-radius: 40px;
+        transition:0.3s;
+        border: none;
+        background: linear-gradient(45deg, #7af61c, rgba(37, 128, 17, 0.91), #7af61c);
+        background-size: 300% 300%;
+        animation: color 12s linear infinite;
+        cursor: pointer;
+
+    }
+    button[type=submit]:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px #595959
+
+    }
 
 }
-
+@keyframes color {
+    0%{
+        background-position: 0 50%;
+    }
+    50%{
+        background-position: 100% 50%;
+    }
+    100%{
+        background-position: 0 50%;
+    }
+}
 /*
 Customer display
 #

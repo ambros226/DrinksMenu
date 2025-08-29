@@ -1,2 +1,3 @@
 on|margarita
 on|mojito
+on|majda

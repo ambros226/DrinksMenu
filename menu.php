@@ -160,7 +160,10 @@ require_once "header.php";
             <input type="text" name="phone-num" id="phone-num"
                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required
                    value="<?= $_SESSION['user-info']['phone'] ?? '' ?>">
-            <input type="submit" value="ORDER">
+            <button type="submit">
+                Send
+                <img src="images/icons/send-icon.png" alt="" style="width:25px; height:25px; vertical-align:middle; color: #dddddd">
+            </button>
         </div>
     </form>
 </div>
